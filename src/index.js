@@ -34,10 +34,12 @@
       noWrap: false,
       onCycleTo: null,
       padding: 0,
+      perspectiveFactor: 1.25,
       shift: 0,
       sliderClass: 'micro-slider',
       sliderItemClass: 'slider-item',
       transitionDuration: 250,
+      wrapperClass: 'slider-wrapper',
       zoomScale: -100,
     };
 
@@ -47,7 +49,6 @@
       this.activeItemIndex = 0;
       this.amplitude = null;
       this.center = 0;
-      this.sliderContainer = container;
       this.draggedX = false;
       this.draggedY = false;
       this.frame = null;
@@ -59,6 +60,8 @@
       this.referencePos = { x: 0, y: 0 };
       this.scrolling = false;
       this.scrollingTimeout = null;
+      this.sliderContainer = container;
+      this.sliderWrapper = null;
       this.target = 0;
       this.ticker = null;
       this.timestamp = null;
@@ -67,19 +70,22 @@
     }
 
     init() {
-      this.initialized = true;
       this.setSliderContainer();
+      this.setSliderWrapper();
       this.setSliderItems();
       this.setSliderDimensions();
       this.setIndicators();
       this.setXForm();
       this.bindEvents();
 
-      if (!this.initialized && !this.sliderContainer.classList.contains(this.options.initializedClass)) {
+      if (!this.sliderContainer.classList.contains(this.options.initializedClass)) {
         this.sliderContainer.classList.add(this.options.initializedClass);
       }
 
+      requestAnimationFrame(this.autoScroll);
+      this.resizeHandler();
       this.scroll();
+      this.initialized = true;
     }
 
     setSliderContainer() {
@@ -99,19 +105,37 @@
       }
     }
 
+    setSliderWrapper() {
+      this.sliderWrapper = document.createElement('div');
+      this.sliderWrapper.classList.add(this.options.wrapperClass);
+      this.sliderWrapper.style.overflow = 'hidden';
+      this.sliderWrapper.style.width = '100%';
+      this.sliderContainer.appendChild(this.sliderWrapper);
+    }
+
     setSliderItems() {
       const children = this.sliderContainer.children;
+      const dispose = [];
       this.items = [];
 
       for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
-        if (child.classList.contains(this.options.sliderItemClass)) {
-          this.items.push(child);
+        const clone = child.cloneNode(true);
 
+        if (child.classList.contains(this.options.sliderItemClass)) {
           if (child.classList.contains(this.options.activeItemClass)) {
             this.activeItemIndex = i;
           }
+
+          dispose.push(child);
+          this.items.push(clone);
+          this.sliderWrapper.appendChild(clone);
         }
+      }
+
+      for (let i = 0, len = dispose.length; i < len; i++) {
+        const d = dispose[i];
+        d.parentNode.removeChild(d);
       }
 
       this.itemCount = this.items.length;
@@ -135,7 +159,12 @@
         height: item.offsetHeight,
         width: item.offsetWidth,
       };
-      this.sliderContainer.style.height = item.offsetHeight;
+
+      /**
+       * Set Wrapper Perspective & DIM
+       */
+      this.sliderWrapper.style.height = `${item.offsetHeight}px`;
+      this.sliderWrapper.style.perspective = `${item.offsetHeight * this.options.perspectiveFactor}px`;
       this.dim = this.itemDimensions.width * 2 + this.options.padding;
 
       if (!this.initialized) {

@@ -1,6 +1,6 @@
 # micro-slider
 
-[![version](https://img.shields.io/badge/Version-1.0.5-green.svg)](https://npmjs.org/package/micro-slider)
+[![version](https://img.shields.io/badge/Version-1.0.6-green.svg)](https://npmjs.org/package/micro-slider)
 [![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/lgse/micro-slider/master/LICENSE)
 
 https://github.com/lgse/micro-slider
@@ -101,9 +101,11 @@ Here is the list of available values to customize how your slider is going to wo
 - **noWrap**: <Bool> Whether the carousel items continuously wrap around or not.
 - **onCycleTo**: <Function> Callback function for when the carousel has cycled to the next element.
 - **padding**: <Number> Padding between items.
+- **perspectiveFactor**: <Number> Height of carousel item multiplied by perspective factor will be the perspective of the carousel.
 - **shift**: <Number> Carousel item offset.
 - **sliderClass**: <String> Class appended to carousel item container.
 - **sliderItemClass**: <String> Class appended to carousel items.
+- **sliderWrapperClass**: <String> Class appended to carousel wrapper.
 - **transitionDuration**: <Number> Transition duration in milliseconds.
 - **zoomScale**: <Number> Carousel perspective zoom scale.
 
@@ -125,10 +127,12 @@ Here is the list of available values to customize how your slider is going to wo
   noWrap: false,
   onCycleTo: null,
   padding: 0,
+  perspectiveFactor: 1.25,
   scrollingClass: 'scrolling',
   shift: 0,
   sliderClass: 'micro-slider',
   sliderItemClass: 'slider-item',
+  sliderWrapperClass: 'slider-wrapper',
   transitionDuration: 250,
   zoomScale: -100,
 }
