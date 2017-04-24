@@ -19,7 +19,7 @@ Lightweight, Responsive, Touch Friendly, Dependency-Free JavaScript Slider with 
 - Uses [requestAnimationFrame](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame) for animations
 
 ## Demo
-[Demo here](https://lgse.github.io/micro-slider)
+[https://lgse.github.io/micro-slider](https://lgse.github.io/micro-slider)
 
 ## Install
 ```sh
