@@ -1,0 +1,34 @@
+{
+  "name": "micro-slider",
+  "version": "1.0.3",
+  "author": "l0gicgate <pierre@lgse.com>",
+  "description": "Lightweight, Responsive, Touch Friendly, Dependency-Free JavaScript Slider with Hardware Accelerated Transitions.",
+  "scripts": {
+    "compile": "rimraf dist/* && babel src -o dist/micro-slider.js && npm run minify && cp src/index.css dist/micro-slider.css",
+    "minify": "uglifyjs dist/micro-slider.js --compress --mangle -o dist/micro-slider.min.js",
+    "prepublish": "npm run compile"
+  },
+  "license": "MIT",
+  "keywords": ["slider", "carousel", "slideshow", "micro", "tiny", "vanilla"],
+  "main": "dist/micro-slider.js",
+  "dependencies": {
+    "babel-runtime": "^6.23.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.24.1",
+    "babel-preset-babili": "0.0.12",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "rimraf": "^2.6.1",
+    "uglify-js": "2.8.22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lgse/micro-slider.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lgse/micro-slider/issues"
+  },
+  "homepage": "https://github.com/lgse/micro-slider#readme"
+}
