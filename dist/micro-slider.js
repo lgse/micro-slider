@@ -452,6 +452,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.draggedX = false;
       this.draggedY = false;
       this.frame = null;
+      this.initialized = false;
       this.lastCenter = null;
       this.offset = 0;
       this.options = Object.assign({}, MicroSlider.defaults, options);
@@ -469,6 +470,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     _createClass(MicroSlider, [{
       key: 'init',
       value: function init() {
+        this.initialized = true;
         this.setSliderContainer();
         this.setSliderItems();
         this.setSliderDimensions();
@@ -476,11 +478,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.setXForm();
         this.bindEvents();
 
-        if (!this.sliderContainer.classList.contains(this.options.initializedClass)) {
+        if (!this.initialized && !this.sliderContainer.classList.contains(this.options.initializedClass)) {
           this.sliderContainer.classList.add(this.options.initializedClass);
-        } else {
-          this.resizeHandler();
-          this.cycleTo(this.activeItemIndex);
         }
 
         this.scroll();
@@ -539,7 +538,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.sliderContainer.style.height = item.offsetHeight;
         this.dim = this.itemDimensions.width * 2 + this.options.padding;
 
-        item.style.display = 'none';
+        if (!this.initialized) {
+          item.style.display = 'none';
+        }
       }
     }, {
       key: 'setIndicators',
