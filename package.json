@@ -1,6 +1,6 @@
 {
   "name": "micro-slider",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "l0gicgate <pierre@lgse.com>",
   "description": "Lightweight, Responsive, Touch Friendly, Dependency-Free JavaScript Slider with Hardware Accelerated Transitions.",
   "scripts": {
@@ -11,13 +11,9 @@
   "license": "MIT",
   "keywords": ["slider", "carousel", "slideshow", "micro", "tiny", "vanilla"],
   "main": "dist/micro-slider.js",
-  "dependencies": {
-    "babel-runtime": "^6.23.0"
-  },
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
-    "babel-preset-babili": "0.0.12",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "rimraf": "^2.6.1",
