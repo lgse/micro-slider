@@ -6,7 +6,7 @@
    * Attach microSlider to the `window` when executed as a <script>.
    * Cond 1: RequireJS
    * Cond 2: CommonJS
-   * Cond 3: Other
+   * Cond 3: Attach to Window Object
    */
   if (typeof define === 'function' && define.amd) {
     define(MS);

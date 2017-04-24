@@ -1,6 +1,6 @@
 # micro-slider
 
-[![version](https://img.shields.io/badge/Version-1.0.3-green.svg)](https://npmjs.org/package/micro-slider)
+[![version](https://img.shields.io/badge/Version-1.0.4-green.svg)](https://npmjs.org/package/micro-slider)
 [![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/lgse/micro-slider/master/LICENSE)
 
 https://github.com/lgse/micro-slider
