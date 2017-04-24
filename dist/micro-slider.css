@@ -1,0 +1,27 @@
+.micro-slider {
+    height: 480px;
+    position: relative;
+    width: 100%;
+}
+
+.slider-wrapper {
+    overflow: hidden;
+    position: relative;
+    transform-style: preserve-3d;
+    transform-origin: 0 50%;
+}
+
+.slider-item {
+    background: #FFF;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.12);
+    display: none;
+    height: 320px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 320px;
+}
+
+.slider-item:not(.active) {
+    cursor: pointer;
+}
