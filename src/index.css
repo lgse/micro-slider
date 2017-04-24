@@ -15,7 +15,6 @@
     left: 0;
     position: absolute;
     top: 0;
-    transition: all 250ms ease-out;
     width: 320px;
 }
 
