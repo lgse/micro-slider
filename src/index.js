@@ -241,7 +241,7 @@
       window.addEventListener('resize', this.resizeHandler);
     }
 
-    getXPos = (e) => {
+    getXPos(e) {
       let x = e.clientX;
 
       if (e.targetTouches && (e.targetTouches.length >= 1)) {
@@ -249,9 +249,9 @@
       }
 
       return x;
-    };
+    }
 
-    getYPos = (e) => {
+    getYPos(e) {
       let y = e.clientY;
 
       if (e.targetTouches && (e.targetTouches.length >= 1)) {
@@ -261,7 +261,19 @@
       return y;
     };
 
-    getClosestItem = (el) => {
+    wrap(x) {
+      const c = this.itemCount;
+
+      if (x >= c) {
+        return x % c;
+      } else if (x < 0) {
+        return this.wrap(c + (x % c));
+      } else {
+        return x;
+      }
+    };
+
+    getClosestItem(el) {
       /**
        * Check if original element is a slider item before traversing parents
        */
@@ -282,9 +294,9 @@
       }
 
       return null;
-    };
+    }
 
-    getItemIndex = (el) => {
+    getItemIndex(el) {
       for (let i = 0; i < this.itemCount; i++) {
         if (this.items[i] === el) {
           return i;
@@ -292,7 +304,7 @@
       }
 
       return -1;
-    };
+    }
 
     prevHandler = (n = -1) => {
       this.target = (this.dim * Math.round(this.offset / this.dim)) - (this.dim * n);
@@ -437,11 +449,6 @@
 
       const v = 1000 * delta / (1 + elapsed);
       this.velocity = 0.8 * v + 0.2 * this.velocity;
-    };
-
-    wrap = (x) => {
-      const c = this.itemCount;
-      return (x >= c) ? (x % c) : (x < 0) ? this.wrap(c + (x % c)) : x;
     };
 
     cycleTo = (n) => {
@@ -634,15 +641,16 @@
     };
 
     autoScroll = () => {
-      if (this.amplitude) {
-        const elapsed = Date.now() - this.timestamp;
-        const delta = this.amplitude * Math.exp(-elapsed / this.options.transitionDuration);
-        if (delta > 2 || delta < -2) {
-          this.scroll(this.target - delta);
-          requestAnimationFrame(this.autoScroll);
-        } else {
-          this.scroll(this.target);
-        }
+      const elapsed = Date.now() - this.timestamp;
+      const delta = this.amplitude * Math.exp(-elapsed / this.options.transitionDuration);
+
+      if (!this.amplitude) {
+        return false;
+      } else if (delta > 2 || delta < -2) {
+        this.scroll(this.target - delta);
+        requestAnimationFrame(this.autoScroll);
+      } else {
+        this.scroll(this.target);
       }
     };
 
