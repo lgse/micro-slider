@@ -37,59 +37,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       _classCallCheck(this, MicroSlider);
 
-      this.getXPos = function (e) {
-        var x = e.clientX;
-
-        if (e.targetTouches && e.targetTouches.length >= 1) {
-          x = e.targetTouches[0].clientX;
-        }
-
-        return x;
-      };
-
-      this.getYPos = function (e) {
-        var y = e.clientY;
-
-        if (e.targetTouches && e.targetTouches.length >= 1) {
-          y = e.targetTouches[0].clientY;
-        }
-
-        return y;
-      };
-
-      this.getClosestItem = function (el) {
-        /**
-         * Check if original element is a slider item before traversing parents
-         */
-        if (el.classList.contains(_this.options.sliderItemClass)) {
-          return el;
-        }
-
-        /**
-         * Traverse Parents
-         */
-        var parent = void 0;
-        while (el) {
-          parent = el.parentElement;
-          if (parent && parent.classList.contains(_this.options.sliderItemClass)) {
-            return parent;
-          }
-          el = parent;
-        }
-
-        return null;
-      };
-
-      this.getItemIndex = function (el) {
-        for (var i = 0; i < _this.itemCount; i++) {
-          if (_this.items[i] === el) {
-            return i;
-          }
-        }
-
-        return -1;
-      };
-
       this.prevHandler = function () {
         var n = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : -1;
 
@@ -237,11 +184,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var v = 1000 * delta / (1 + elapsed);
         _this.velocity = 0.8 * v + 0.2 * _this.velocity;
-      };
-
-      this.wrap = function (x) {
-        var c = _this.itemCount;
-        return x >= c ? x % c : x < 0 ? _this.wrap(c + x % c) : x;
       };
 
       this.cycleTo = function (n) {
@@ -413,15 +355,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       };
 
       this.autoScroll = function () {
-        if (_this.amplitude) {
-          var elapsed = Date.now() - _this.timestamp;
-          var delta = _this.amplitude * Math.exp(-elapsed / _this.options.transitionDuration);
-          if (delta > 2 || delta < -2) {
-            _this.scroll(_this.target - delta);
-            requestAnimationFrame(_this.autoScroll);
-          } else {
-            _this.scroll(_this.target);
-          }
+        var elapsed = Date.now() - _this.timestamp;
+        var delta = _this.amplitude * Math.exp(-elapsed / _this.options.transitionDuration);
+
+        if (!_this.amplitude) {
+          return false;
+        } else if (delta > 2 || delta < -2) {
+          _this.scroll(_this.target - delta);
+          requestAnimationFrame(_this.autoScroll);
+        } else {
+          _this.scroll(_this.target);
         }
       };
 
@@ -649,6 +592,76 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
          * Window Resize Event
          */
         window.addEventListener('resize', this.resizeHandler);
+      }
+    }, {
+      key: 'getXPos',
+      value: function getXPos(e) {
+        var x = e.clientX;
+
+        if (e.targetTouches && e.targetTouches.length >= 1) {
+          x = e.targetTouches[0].clientX;
+        }
+
+        return x;
+      }
+    }, {
+      key: 'getYPos',
+      value: function getYPos(e) {
+        var y = e.clientY;
+
+        if (e.targetTouches && e.targetTouches.length >= 1) {
+          y = e.targetTouches[0].clientY;
+        }
+
+        return y;
+      }
+    }, {
+      key: 'wrap',
+      value: function wrap(x) {
+        var c = this.itemCount;
+
+        if (x >= c) {
+          return x % c;
+        } else if (x < 0) {
+          return this.wrap(c + x % c);
+        } else {
+          return x;
+        }
+      }
+    }, {
+      key: 'getClosestItem',
+      value: function getClosestItem(el) {
+        /**
+         * Check if original element is a slider item before traversing parents
+         */
+        if (el.classList.contains(this.options.sliderItemClass)) {
+          return el;
+        }
+
+        /**
+         * Traverse Parents
+         */
+        var parent = void 0;
+        while (el) {
+          parent = el.parentElement;
+          if (parent && parent.classList.contains(this.options.sliderItemClass)) {
+            return parent;
+          }
+          el = parent;
+        }
+
+        return null;
+      }
+    }, {
+      key: 'getItemIndex',
+      value: function getItemIndex(el) {
+        for (var i = 0; i < this.itemCount; i++) {
+          if (this.items[i] === el) {
+            return i;
+          }
+        }
+
+        return -1;
       }
     }]);
 
