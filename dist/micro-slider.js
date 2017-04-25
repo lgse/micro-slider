@@ -481,10 +481,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.setXForm();
         this.bindEvents();
 
-        if (!this.sliderContainer.classList.contains(this.options.initializedClass)) {
-          this.sliderContainer.classList.add(this.options.initializedClass);
-        }
-
+        /**
+         * Trigger window resize event and manually scroll to finish initialization.
+         */
         requestAnimationFrame(this.autoScroll);
         this.resizeHandler();
         this.scroll();
@@ -504,12 +503,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (!this.sliderContainer.classList.contains(this.options.sliderClass)) {
           this.sliderContainer.classList.add(this.options.sliderClass);
         }
+
+        if (!this.sliderContainer.classList.contains(this.options.initializedClass)) {
+          this.sliderContainer.classList.add(this.options.initializedClass);
+        }
       }
     }, {
       key: 'setSliderWrapper',
       value: function setSliderWrapper() {
         this.sliderWrapper = document.createElement('div');
-        this.sliderWrapper.classList.add(this.options.wrapperClass);
+        this.sliderWrapper.classList.add(this.options.sliderWrapperClass);
         this.sliderWrapper.style.overflow = 'hidden';
         this.sliderWrapper.style.width = '100%';
         this.sliderContainer.appendChild(this.sliderWrapper);
@@ -556,16 +559,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
          */
         item.style.display = 'block';
 
+        /**
+         * Set Wrapper Perspective & DIM
+         */
         this.itemDimensions = {
           height: item.offsetHeight,
           width: item.offsetWidth
         };
-
-        /**
-         * Set Wrapper Perspective & DIM
-         */
         this.sliderWrapper.style.height = item.offsetHeight + 'px';
-        this.sliderWrapper.style.perspective = item.offsetHeight * this.options.perspectiveFactor + 'px';
+        this.sliderWrapper.style.perspective = this.options.fullWidth ? 0 : item.offsetHeight * this.options.perspectiveFactor + 'px';
         this.dim = this.itemDimensions.width * 2 + this.options.padding;
 
         if (!this.initialized) {
@@ -672,8 +674,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     shift: 0,
     sliderClass: 'micro-slider',
     sliderItemClass: 'slider-item',
+    sliderWrapperClass: 'slider-wrapper',
     transitionDuration: 250,
-    wrapperClass: 'slider-wrapper',
     zoomScale: -100
   };
 
