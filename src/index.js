@@ -48,6 +48,7 @@
       this.activeItem = null;
       this.activeItemIndex = 0;
       this.amplitude = null;
+      this.attached = false;
       this.center = 0;
       this.draggedX = false;
       this.draggedY = false;
@@ -85,6 +86,10 @@
       this.resizeHandler();
       this.scroll();
       this.initialized = true;
+    }
+
+    detach() {
+      this.bindEvents(true);
     }
 
     setSliderContainer() {
@@ -165,7 +170,7 @@
         height: item.offsetHeight,
         width: item.offsetWidth,
       };
-      this.sliderWrapper.style.height = `${item.offsetHeight}px`;
+      this.sliderWrapper.style.height = `${this.sliderContainer.offsetHeight}px`;
       this.sliderWrapper.style.perspective = this.options.fullWidth ? 0 : `${item.offsetHeight * this.options.perspectiveFactor}px`;
       this.dim = this.itemDimensions.width * 2 + this.options.padding;
 
@@ -216,29 +221,33 @@
       this.xForm = xForm;
     }
 
-    bindEvents() {
+    bindEvents(unbind = false) {
+      const fn = unbind === false ? 'addEventListener' : 'removeEventListener';
+
       /**
        * Touch Events
        */
       if (typeof window.ontouchstart !== 'undefined') {
-        this.sliderContainer.addEventListener('touchstart', this.tapHandler);
-        this.sliderContainer.addEventListener('touchmove', this.dragHandler);
-        this.sliderContainer.addEventListener('touchend', this.releaseHandler);
+        this.sliderContainer[fn]('touchstart', this.tapHandler);
+        this.sliderContainer[fn]('touchmove', this.dragHandler);
+        this.sliderContainer[fn]('touchend', this.releaseHandler);
       }
 
       /**
        * Mouse Events
        */
-      this.sliderContainer.addEventListener('mousedown', this.tapHandler);
-      this.sliderContainer.addEventListener('mousemove', this.dragHandler);
-      this.sliderContainer.addEventListener('mouseup', this.releaseHandler);
-      this.sliderContainer.addEventListener('mouseleave', this.releaseHandler);
-      this.sliderContainer.addEventListener('click', this.clickHandler);
+      this.sliderContainer[fn]('mousedown', this.tapHandler);
+      this.sliderContainer[fn]('mousemove', this.dragHandler);
+      this.sliderContainer[fn]('mouseup', this.releaseHandler);
+      this.sliderContainer[fn]('mouseleave', this.releaseHandler);
+      this.sliderContainer[fn]('click', this.clickHandler);
 
       /**
        * Window Resize Event
        */
-      window.addEventListener('resize', this.resizeHandler);
+      window[fn]('resize', this.resizeHandler);
+
+      this.attached = unbind === false;
     }
 
     getXPos(e) {
@@ -307,6 +316,10 @@
     }
 
     prevHandler = (n = -1) => {
+      if (!this.attached) {
+        return;
+      }
+
       this.target = (this.dim * Math.round(this.offset / this.dim)) - (this.dim * n);
 
       if (this.offset !== this.target) {
@@ -317,6 +330,10 @@
     };
 
     nextHandler = (n = 1) => {
+      if (!this.attached) {
+        return;
+      }
+
       this.target = (this.dim * Math.round(this.offset / this.dim)) + (this.dim * n);
 
       if (this.offset !== this.target) {
@@ -327,6 +344,10 @@
     };
 
     clickHandler = (e) => {
+      if (!this.attached) {
+        return;
+      }
+
       if (!e.target.classList.contains(this.options.sliderItemClass)) {
         return;
       }
@@ -349,6 +370,10 @@
     };
 
     tapHandler = (e) => {
+      if (!this.attached) {
+        return;
+      }
+
       if (e.target === this.sliderContainer || e.target.classList.contains(this.options.sliderItemClass)) {
         e.preventDefault();
       }
@@ -368,6 +393,10 @@
     };
 
     dragHandler = (e) => {
+      if (!this.attached) {
+        return;
+      }
+
       if (this.pressed) {
         const x = this.getXPos(e);
         const y = this.getYPos(e);
@@ -430,6 +459,10 @@
     };
 
     resizeHandler = () => {
+      if (!this.attached) {
+        return;
+      }
+
       if (this.options.fullWidth) {
         this.setSliderDimensions();
         this.offset = this.center * 2 * this.itemDimensions.width;
