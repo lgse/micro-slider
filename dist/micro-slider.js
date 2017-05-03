@@ -40,6 +40,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.prevHandler = function () {
         var n = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : -1;
 
+        if (!_this.attached) {
+          return;
+        }
+
         _this.target = _this.dim * Math.round(_this.offset / _this.dim) - _this.dim * n;
 
         if (_this.offset !== _this.target) {
@@ -52,6 +56,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.nextHandler = function () {
         var n = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
 
+        if (!_this.attached) {
+          return;
+        }
+
         _this.target = _this.dim * Math.round(_this.offset / _this.dim) + _this.dim * n;
 
         if (_this.offset !== _this.target) {
@@ -62,6 +70,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       };
 
       this.clickHandler = function (e) {
+        if (!_this.attached) {
+          return;
+        }
+
         if (!e.target.classList.contains(_this.options.sliderItemClass)) {
           return;
         }
@@ -84,6 +96,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       };
 
       this.tapHandler = function (e) {
+        if (!_this.attached) {
+          return;
+        }
+
         if (e.target === _this.sliderContainer || e.target.classList.contains(_this.options.sliderItemClass)) {
           e.preventDefault();
         }
@@ -103,6 +119,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       };
 
       this.dragHandler = function (e) {
+        if (!_this.attached) {
+          return;
+        }
+
         if (_this.pressed) {
           var x = _this.getXPos(e);
           var y = _this.getYPos(e);
@@ -165,6 +185,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       };
 
       this.resizeHandler = function () {
+        if (!_this.attached) {
+          return;
+        }
+
         if (_this.options.fullWidth) {
           _this.setSliderDimensions();
           _this.offset = _this.center * 2 * _this.itemDimensions.width;
@@ -392,6 +416,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.activeItem = null;
       this.activeItemIndex = 0;
       this.amplitude = null;
+      this.attached = false;
       this.center = 0;
       this.draggedX = false;
       this.draggedY = false;
@@ -420,6 +445,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.setSliderWrapper();
         this.setSliderItems();
         this.setSliderDimensions();
+        this.setSliderPerspective();
         this.setIndicators();
         this.setXForm();
         this.bindEvents();
@@ -427,9 +453,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         /**
          * Trigger window resize event and manually scroll to finish initialization.
          */
-        requestAnimationFrame(this.autoScroll);
-        this.resizeHandler();
-        this.scroll();
+        this.refresh();
         this.initialized = true;
       }
     }, {
@@ -496,26 +520,37 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: 'setSliderDimensions',
       value: function setSliderDimensions() {
         var item = this.items[0];
-
-        /**
-         * Force display to detect height
-         */
         item.style.display = 'block';
-
-        /**
-         * Set Wrapper Perspective & DIM
-         */
-        this.itemDimensions = {
-          height: item.offsetHeight,
-          width: item.offsetWidth
-        };
-        this.sliderWrapper.style.height = item.offsetHeight + 'px';
-        this.sliderWrapper.style.perspective = this.options.fullWidth ? 0 : item.offsetHeight * this.options.perspectiveFactor + 'px';
-        this.dim = this.itemDimensions.width * 2 + this.options.padding;
+        this.setSliderItemsDimensions(item.offsetHeight + 'px', item.offsetWidth + 'px');
 
         if (!this.initialized) {
           item.style.display = 'none';
         }
+      }
+    }, {
+      key: 'setSliderItemsDimensions',
+      value: function setSliderItemsDimensions() {
+        var height = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '320px';
+        var width = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '320px';
+
+        for (var i = 0; i < this.itemCount; i++) {
+          var item = this.items[i];
+          item.style.height = height;
+          item.style.width = width;
+        }
+
+        this.itemDimensions = {
+          height: parseInt(height),
+          width: parseInt(width)
+        };
+
+        this.dim = this.itemDimensions.width * 2 + this.options.padding;
+      }
+    }, {
+      key: 'setSliderPerspective',
+      value: function setSliderPerspective() {
+        this.sliderWrapper.style.height = this.sliderContainer.offsetHeight + 'px';
+        this.sliderWrapper.style.perspective = this.options.fullWidth ? 'none' : this.itemDimensions.height * this.options.perspectiveFactor + 'px';
       }
     }, {
       key: 'setIndicators',
@@ -570,28 +605,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: 'bindEvents',
       value: function bindEvents() {
+        var unbind = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+        var fn = unbind === false ? 'addEventListener' : 'removeEventListener';
+
         /**
          * Touch Events
          */
         if (typeof window.ontouchstart !== 'undefined') {
-          this.sliderContainer.addEventListener('touchstart', this.tapHandler);
-          this.sliderContainer.addEventListener('touchmove', this.dragHandler);
-          this.sliderContainer.addEventListener('touchend', this.releaseHandler);
+          this.sliderContainer[fn]('touchstart', this.tapHandler);
+          this.sliderContainer[fn]('touchmove', this.dragHandler);
+          this.sliderContainer[fn]('touchend', this.releaseHandler);
         }
 
         /**
          * Mouse Events
          */
-        this.sliderContainer.addEventListener('mousedown', this.tapHandler);
-        this.sliderContainer.addEventListener('mousemove', this.dragHandler);
-        this.sliderContainer.addEventListener('mouseup', this.releaseHandler);
-        this.sliderContainer.addEventListener('mouseleave', this.releaseHandler);
-        this.sliderContainer.addEventListener('click', this.clickHandler);
+        this.sliderContainer[fn]('mousedown', this.tapHandler);
+        this.sliderContainer[fn]('mousemove', this.dragHandler);
+        this.sliderContainer[fn]('mouseup', this.releaseHandler);
+        this.sliderContainer[fn]('mouseleave', this.releaseHandler);
+        this.sliderContainer[fn]('click', this.clickHandler);
 
         /**
          * Window Resize Event
          */
-        window.addEventListener('resize', this.resizeHandler);
+        window[fn]('resize', this.resizeHandler);
+
+        this.attached = unbind === false;
       }
     }, {
       key: 'getXPos',
@@ -662,6 +703,33 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
 
         return -1;
+      }
+    }, {
+      key: 'refresh',
+      value: function refresh() {
+        requestAnimationFrame(this.autoScroll);
+        this.resizeHandler();
+        this.scroll();
+      }
+    }, {
+      key: 'toggleFullWidth',
+      value: function toggleFullWidth() {
+        var fullWidth = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+        var itemWidth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 320;
+        var itemHeight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+        var height = itemHeight === null ? this.itemDimensions.height + 'px' : itemHeight + 'px';
+        var width = fullWidth ? '100%' : itemWidth + 'px';
+        this.options.fullWidth = fullWidth;
+
+        this.setSliderItemsDimensions(height, width);
+        this.setSliderPerspective();
+        this.refresh();
+      }
+    }, {
+      key: 'detach',
+      value: function detach() {
+        this.bindEvents(true);
       }
     }]);
 
