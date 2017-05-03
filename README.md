@@ -144,6 +144,8 @@ Here is the list of available values to customize how your slider is going to wo
 - `next()` Switches displaying item to the next one.
 - `prev()` Switches displaying item to the previous one.
 - `set(index)` Changes image to a given `index` value.
+- `detach()` Destroy the slider instance
+- `toggleFullWidth(true|false, itemWidth = 320, itemHeight = null)` Toggle the slider `fullWidth` option on the fly. When toggling `fullWidth` off you need to provide the new item `width (int)` in pixels, optionally you can provide a new item `height (int)` in pixel also.
 
 
 ## License

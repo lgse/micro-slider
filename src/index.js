@@ -75,6 +75,7 @@
       this.setSliderWrapper();
       this.setSliderItems();
       this.setSliderDimensions();
+      this.setSliderPerspective();
       this.setIndicators();
       this.setXForm();
       this.bindEvents();
@@ -82,14 +83,8 @@
       /**
        * Trigger window resize event and manually scroll to finish initialization.
        */
-      requestAnimationFrame(this.autoScroll);
-      this.resizeHandler();
-      this.scroll();
+      this.refresh();
       this.initialized = true;
-    }
-
-    detach() {
-      this.bindEvents(true);
     }
 
     setSliderContainer() {
@@ -157,26 +152,32 @@
 
     setSliderDimensions() {
       const item = this.items[0];
-
-      /**
-       * Force display to detect height
-       */
       item.style.display = 'block';
-
-      /**
-       * Set Wrapper Perspective & DIM
-       */
-      this.itemDimensions = {
-        height: item.offsetHeight,
-        width: item.offsetWidth,
-      };
-      this.sliderWrapper.style.height = `${this.sliderContainer.offsetHeight}px`;
-      this.sliderWrapper.style.perspective = this.options.fullWidth ? 0 : `${item.offsetHeight * this.options.perspectiveFactor}px`;
-      this.dim = this.itemDimensions.width * 2 + this.options.padding;
+      this.setSliderItemsDimensions(`${item.offsetHeight}px`, `${item.offsetWidth}px`);
 
       if (!this.initialized) {
         item.style.display = 'none';
       }
+    }
+
+    setSliderItemsDimensions(height = '320px', width = '320px') {
+      for (let i = 0; i < this.itemCount; i++) {
+        let item = this.items[i];
+        item.style.height = height;
+        item.style.width = width;
+      }
+
+      this.itemDimensions = {
+        height: parseInt(height),
+        width: parseInt(width),
+      };
+
+      this.dim = this.itemDimensions.width * 2 + this.options.padding;
+    }
+
+    setSliderPerspective() {
+      this.sliderWrapper.style.height = `${this.sliderContainer.offsetHeight}px`;
+      this.sliderWrapper.style.perspective = this.options.fullWidth ? 'none' : `${this.itemDimensions.height * this.options.perspectiveFactor}px`;
     }
 
     setIndicators() {
@@ -687,6 +688,12 @@
       }
     };
 
+    refresh() {
+      requestAnimationFrame(this.autoScroll);
+      this.resizeHandler();
+      this.scroll();
+    }
+
     next = () => {
       const i = this.activeItemIndex + 1;
 
@@ -704,6 +711,20 @@
     };
 
     set = (n) => this.cycleTo(n);
+
+    toggleFullWidth(fullWidth = false, itemWidth = 320, itemHeight = null) {
+      let height = itemHeight === null ? `${this.itemDimensions.height}px` : `${itemHeight}px`;
+      let width = fullWidth ? '100%' : `${itemWidth}px`;
+      this.options.fullWidth = fullWidth;
+
+      this.setSliderItemsDimensions(height, width);
+      this.setSliderPerspective();
+      this.refresh();
+    }
+
+    detach() {
+      this.bindEvents(true);
+    }
   }
 
   return MicroSlider;
