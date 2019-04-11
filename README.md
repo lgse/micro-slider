@@ -3,9 +3,10 @@
 [![version](https://img.shields.io/badge/Version-1.0.9-green.svg)](https://npmjs.org/package/micro-slider)
 [![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/lgse/micro-slider/master/LICENSE)
 
-https://github.com/lgse/micro-slider
-
 Lightweight, Responsive, Touch Friendly, Dependency-Free JavaScript Slider with Hardware Accelerated Transitions.
+
+## Live Demo
+https://lgse.github.io/micro-slider/
 
 ## About
 
