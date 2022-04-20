@@ -74,8 +74,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return;
         }
 
-        if (!e.target.classList.contains(_this.options.sliderItemClass)) {
-          return;
+        var clickDelegate = e.target;
+        if (!clickDelegate.classList.contains(_this.options.sliderItemClass)) {
+          clickDelegate = e.target.closest('.' + _this.options.sliderItemClass);
+
+          if (!clickDelegate) {
+            return;
+          }
         }
 
         if (_this.draggedY) {
@@ -83,7 +88,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           e.stopPropagation();
           return false;
         } else if (!_this.options.fullWidth) {
-          var closest = _this.getClosestItem(e.target);
+          var closest = clickDelegate.closest('.' + _this.options.sliderItemClass);
           var clickedIndex = _this.getItemIndex(closest);
           var diff = _this.center % _this.itemCount - clickedIndex;
 
@@ -334,6 +339,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       };
 
       this.setActiveItem = function (el) {
+        if (typeof el === 'string') {
+          el = document.querySelector(el);
+        }
+
+        var item = null;
+        _this.items.forEach(function (i) {
+          if (i === el) {
+            item = i;
+          }
+        });
+
+        if (!el || !(el instanceof HTMLElement) || !item) {
+          throw new Error('Could not resolve element passed to `Slider.setActiveItem()`');
+        }
+
         if (!el.classList.contains(_this.options.activeItemClass)) {
           if (_this.activeItem !== null) {
             _this.activeItem.classList.remove(_this.options.activeItemClass);
@@ -668,30 +688,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         } else {
           return x;
         }
-      }
-    }, {
-      key: 'getClosestItem',
-      value: function getClosestItem(el) {
-        /**
-         * Check if original element is a slider item before traversing parents
-         */
-        if (el.classList.contains(this.options.sliderItemClass)) {
-          return el;
-        }
-
-        /**
-         * Traverse Parents
-         */
-        var parent = void 0;
-        while (el) {
-          parent = el.parentElement;
-          if (parent && parent.classList.contains(this.options.sliderItemClass)) {
-            return parent;
-          }
-          el = parent;
-        }
-
-        return null;
       }
     }, {
       key: 'getItemIndex',
