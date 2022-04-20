@@ -283,29 +283,6 @@
       }
     };
 
-    getClosestItem(el) {
-      /**
-       * Check if original element is a slider item before traversing parents
-       */
-      if (el.classList.contains(this.options.sliderItemClass)) {
-        return el;
-      }
-
-      /**
-       * Traverse Parents
-       */
-      let parent;
-      while (el) {
-        parent = el.parentElement;
-        if (parent && parent.classList.contains(this.options.sliderItemClass)) {
-          return parent;
-        }
-        el = parent;
-      }
-
-      return null;
-    }
-
     getItemIndex(el) {
       for (let i = 0; i < this.itemCount; i++) {
         if (this.items[i] === el) {
@@ -349,8 +326,13 @@
         return;
       }
 
-      if (!e.target.classList.contains(this.options.sliderItemClass)) {
-        return;
+      let clickDelegate = e.target;
+      if (!clickDelegate.classList.contains(this.options.sliderItemClass)) {
+        clickDelegate = e.target.closest('.' + this.options.sliderItemClass);
+
+        if (!clickDelegate) {
+          return;
+        }
       }
 
       if (this.draggedY) {
@@ -358,9 +340,9 @@
         e.stopPropagation();
         return false;
       } else if (!this.options.fullWidth) {
-        const closest = this.getClosestItem(e.target);
-        const clickedIndex = this.getItemIndex(closest);
-        const diff = (this.center % this.itemCount) - clickedIndex;
+        var closest = clickDelegate.closest('.' + this.options.sliderItemClass);
+        var clickedIndex = this.getItemIndex(closest);
+        var diff = this.center % this.itemCount - clickedIndex;
 
         if (diff !== 0) {
           e.preventDefault();
@@ -629,6 +611,21 @@
     };
 
     setActiveItem = (el) => {
+      if (typeof el === 'string') {
+        el = document.querySelector(el);
+      }
+
+      let item = null;
+      this.items.forEach(i => {
+        if (i === el) {
+          item = i;
+        }
+      });
+
+      if (!el || !(el instanceof HTMLElement) || !item) {
+        throw new Error('Could not resolve element passed to `Slider.setActiveItem()`');
+      }
+
       if (!el.classList.contains(this.options.activeItemClass)) {
         if (this.activeItem !== null) {
           this.activeItem.classList.remove(this.options.activeItemClass);
