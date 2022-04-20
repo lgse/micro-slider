@@ -9,7 +9,7 @@ Lightweight, Responsive, Touch Friendly, Dependency-Free JavaScript Slider with 
 
 ## About
 
-**micro-slider** is a light weight carousel library with hardware accelerated transitions.
+**micro-slider** is a lightweight carousel library with hardware accelerated transitions.
 
 ## Features
 - Responsive
